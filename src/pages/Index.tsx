@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 
+const SEND_ORDER_URL = "https://functions.poehali.dev/51270fed-d0f3-45a6-943d-6920ebb81499";
+
 const COVER = "https://cdn.poehali.dev/projects/be63e77a-f0c0-40ac-af60-ddc16dcffeab/bucket/53730f58-a259-49be-aafe-61a13a344884.jpg";
 
 const DESCRIPTION = `Мика — травница, ценящая тишину и покой. Акаи — кицунэ, проклятый древним долгом. Их свела судьба, их связал контракт, их ждёт смерть через год.
@@ -24,6 +26,34 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
 
 
 function BuyModal({ onClose }: { onClose: () => void }) {
+  const [name, setName] = useState("");
+  const [contact, setContact] = useState("");
+  const [address, setAddress] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    if (!name.trim() || !contact.trim()) {
+      setError("Пожалуйста, заполните имя и контакт");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      await fetch(SEND_ORDER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, contact, address }),
+      });
+      setDone(true);
+    } catch {
+      setError("Ошибка отправки. Попробуйте ещё раз.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" />
@@ -44,36 +74,63 @@ function BuyModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between bg-secondary/60 px-4 py-3 mb-6 border border-border/50">
-          <span className="font-sans text-sm text-muted-foreground">Стоимость</span>
-          <span className="font-display text-3xl font-light text-fox">850 ₽</span>
-        </div>
+        {done ? (
+          <div className="text-center py-6">
+            <div className="text-4xl mb-4">📚</div>
+            <h4 className="font-display text-2xl font-light text-fox mb-2">Заказ принят!</h4>
+            <p className="font-sans text-sm text-muted-foreground">
+              Мы получили вашу заявку и скоро свяжемся с вами для подтверждения.
+            </p>
+            <button onClick={onClose} className="mt-6 font-sans text-xs text-fox underline underline-offset-4">
+              Закрыть
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between bg-secondary/60 px-4 py-3 mb-6 border border-border/50">
+              <span className="font-sans text-sm text-muted-foreground">Стоимость</span>
+              <span className="font-display text-3xl font-light text-fox">850 ₽</span>
+            </div>
 
-        <div className="space-y-3 mb-6">
-          <input
-            type="text"
-            placeholder="Ваше имя"
-            className="w-full bg-secondary border border-border px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-fox transition-colors"
-          />
-          <input
-            type="text"
-            placeholder="Телефон или e-mail"
-            className="w-full bg-secondary border border-border px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-fox transition-colors"
-          />
-          <input
-            type="text"
-            placeholder="Адрес доставки"
-            className="w-full bg-secondary border border-border px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-fox transition-colors"
-          />
-        </div>
+            <div className="space-y-3 mb-6">
+              <input
+                type="text"
+                placeholder="Ваше имя *"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                className="w-full bg-secondary border border-border px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-fox transition-colors"
+              />
+              <input
+                type="text"
+                placeholder="Телефон или e-mail *"
+                value={contact}
+                onChange={e => setContact(e.target.value)}
+                className="w-full bg-secondary border border-border px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-fox transition-colors"
+              />
+              <input
+                type="text"
+                placeholder="Адрес доставки"
+                value={address}
+                onChange={e => setAddress(e.target.value)}
+                className="w-full bg-secondary border border-border px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-fox transition-colors"
+              />
+            </div>
 
-        <button className="btn-buy w-full bg-fox text-primary-foreground py-4 font-sans text-sm tracking-widest uppercase font-bold hover:bg-foxdark transition-colors">
-          Заказать за 850 ₽
-        </button>
+            {error && <p className="font-sans text-xs text-red-400 mb-4 text-center">{error}</p>}
 
-        <p className="font-sans text-xs text-muted-foreground text-center mt-4">
-          Мы свяжемся с вами для подтверждения заказа и доставки
-        </p>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="btn-buy w-full bg-fox text-primary-foreground py-4 font-sans text-sm tracking-widest uppercase font-bold hover:bg-foxdark transition-colors disabled:opacity-60"
+            >
+              {loading ? "Отправляем..." : "Заказать за 850 ₽"}
+            </button>
+
+            <p className="font-sans text-xs text-muted-foreground text-center mt-4">
+              Мы свяжемся с вами для подтверждения заказа и доставки
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
