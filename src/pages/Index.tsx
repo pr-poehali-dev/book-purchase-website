@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Icon from "@/components/ui/icon";
 
 const COVER = "https://cdn.poehali.dev/projects/be63e77a-f0c0-40ac-af60-ddc16dcffeab/bucket/53730f58-a259-49be-aafe-61a13a344884.jpg";
@@ -11,11 +11,7 @@ const DESCRIPTION = `Мика — травница, ценящая тишину 
 
 const TAGLINE = "Она не искала приключений. Они нашли её сами.";
 
-const REVIEWS = [
-  { name: "Анна М.", stars: 5, text: "Не могла оторваться! История захватила с первых страниц. Магия, любовь и тайны переплетаются мастерски." },
-  { name: "Ольга В.", stars: 5, text: "Редко встречаю книги, которые так тонко передают атмосферу старинных легенд. Прочла за два вечера." },
-  { name: "Марина Т.", stars: 5, text: "Невероятно красивый язык. Образы живые, герои настоящие. Обязательно куплю второй экземпляр в подарок." },
-];
+
 
 const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   id: i,
@@ -26,15 +22,6 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   opacity: 0.3 + (i * 0.04) % 0.5,
 }));
 
-function Stars({ n = 5 }: { n?: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: n }).map((_, i) => (
-        <span key={i} className="text-fox text-sm">★</span>
-      ))}
-    </div>
-  );
-}
 
 function BuyModal({ onClose }: { onClose: () => void }) {
   return (
@@ -94,12 +81,6 @@ function BuyModal({ onClose }: { onClose: () => void }) {
 
 export default function Index() {
   const [modal, setModal] = useState(false);
-  const [activeReview, setActiveReview] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => setActiveReview(r => (r + 1) % REVIEWS.length), 4500);
-    return () => clearInterval(t);
-  }, []);
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -233,39 +214,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ── REVIEWS ── */}
-      <section className="border-b border-border bg-card/20 py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="font-sans text-[10px] tracking-[0.4em] uppercase text-fox mb-10">Отзывы читателей</p>
-
-          <div className="relative" style={{ minHeight: 160 }}>
-            {REVIEWS.map((r, i) => (
-              <div
-                key={i}
-                className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ${
-                  i === activeReview ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
-                }`}
-              >
-                <Stars n={r.stars} />
-                <p className="font-display text-xl md:text-2xl font-light italic text-foreground mt-4 mb-4 leading-relaxed px-4">
-                  "{r.text}"
-                </p>
-                <p className="font-sans text-xs text-fox tracking-widest uppercase">{r.name}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-center gap-2 mt-10">
-            {REVIEWS.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveReview(i)}
-                className={`h-px transition-all duration-300 ${i === activeReview ? "bg-fox w-8" : "bg-border w-4"}`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── CTA ── */}
       <section className="py-28 px-6 text-center relative overflow-hidden">
