@@ -220,9 +220,9 @@ export default function Index() {
       <section className="border-y border-border bg-card/40">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
           {[
-            { label: "Жанр", value: "Магический роман" },
-            { label: "Объём", value: "368 страниц" },
-            { label: "Формат", value: "Твёрдая обложка" },
+            { label: "Жанр", value: "Романтическое фэнтези" },
+            { label: "Объём", value: "190 страниц" },
+            { label: "Формат", value: "Мягкая обложка" },
             { label: "Год", value: "2026" },
           ].map(({ label, value }) => (
             <div key={label} className="flex flex-col items-center py-6 px-4 gap-1">
