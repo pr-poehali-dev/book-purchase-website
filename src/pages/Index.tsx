@@ -157,7 +157,6 @@ export default function Index() {
             {[
               { icon: "Truck", text: "Доставка по России" },
               { icon: "Shield", text: "Гарантия качества" },
-              { icon: "Heart", text: "500+ читателей" },
             ].map(({ icon, text }) => (
               <div key={text} className="flex items-center gap-2 border border-border px-3 py-1.5">
                 <Icon name={icon as "Truck"} size={12} className="text-fox" />
